@@ -6,7 +6,6 @@
 # Special Thanks to: Siddhartha Sahu ##################
 # idea Given: hari_om #################################
 #######################################################
-# PS> please don't mind my spellings :P ###############
 #######################################################
 import sys,os
 from PyQt4 import QtGui, QtCore
@@ -41,6 +40,9 @@ class Cyberoam(QtGui.QWidget):
 		self.lineEdit.setPlaceholderText('Username')
 		self.pushButton.setText(self.toDoAction[self.status])
 		self.label_4.setText('Client is Idle')
+		self.ui.setWindowFlags(self.ui.windowFlags() | QtCore.Qt.CustomizeWindowHint)
+		self.ui.setWindowFlags(self.ui.windowFlags() & ~(QtCore.Qt.WindowCloseButtonHint))
+
 
 		##ACTION HANDLER
 		self.pushButton.clicked.connect(self.takeAction)
@@ -86,6 +88,8 @@ class Cyberoam(QtGui.QWidget):
 				if len(self.users)==0:
 					return
 				self.takeAction()
+				if self.status == 0:
+					return
 				self.hide()
 				self.tray.show()
 
@@ -212,9 +216,9 @@ class Cyberoam(QtGui.QWidget):
 				self.ntd = 0
 		except IOError:
 			self.logout()
+			self.label_4.setText('Connection Lost')
 			if self.isHidden():
 				self.tray.showMessage('Connection Lost','Data Connection lost. Will reconnect in 5s.',1,5000)
-			self.label_4.setText('Connection Lost')
 			self.timer.start(5000)
 			self.ntd = 1
 			return
