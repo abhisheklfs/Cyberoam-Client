@@ -1,0 +1,11 @@
+Cyberoam Client:
+
+Introduction: this is a python script to directly login to cyberoam.
+
+Language Used: Python
+
+Library's Used: PyQt4(QtGui,Qt,QtCore,uic.loadUi), time , urllib, urllib2
+
+Feature Added:
+
+1: Multiple User feed so no inutuption during internet usage.
