@@ -2,8 +2,8 @@
 Version=1.0.0
 Name=Cyberoam
 Comment=Cyberoam Login Shell
-Exec=/opt/cyber/cyber.py
-Icon=/opt/cyber/cyberoam.png
+Exec=/opt/Cyberoam-Client-master/cyber.py
+Icon=/opt/Cyberoam-Client-master/cyberoam.png
 Path=/opt/cyber
 Terminal=false
 Type=Application
