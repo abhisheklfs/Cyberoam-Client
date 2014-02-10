@@ -190,7 +190,7 @@ class Cyberoam(QtGui.QWidget):
 		except IOError:
 			self.label_4.setText('Connection Lost')
 			self.logout()
-			self.timer.start(100000)
+			self.timer.start(5000)
 			return
 		self.timer.start(300000)
 
