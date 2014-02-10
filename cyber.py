@@ -103,9 +103,17 @@ class Cyberoam(QtGui.QWidget):
 			return
 		self.savedData.clear()
 		self.savedData.sync()
-		if self.status == 0:
-			self.lineEdit.clear()
-			self.lineEdit_2.clear()
+		if self.status == 1:
+			self.logout()
+		self.lineEdit.clear()
+		self.lineEdit_2.clear()
+		self.users = []
+		self.passwords = []
+		self.xyzflag = 0
+		self.userNumber = 0
+		self.ntd =0
+
+
 
 
 
