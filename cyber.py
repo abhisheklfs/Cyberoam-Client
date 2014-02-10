@@ -7,7 +7,7 @@
 # idea Given: hari_om #################################
 #######################################################
 #######################################################
-import sys,os
+import sys,os,inspect
 from PyQt4 import QtGui, QtCore
 from PyQt4.uic import loadUi
 import urllib , urllib2
@@ -30,8 +30,11 @@ class Cyberoam(QtGui.QWidget):
 		self.ntd = 0
 		self.userNumber = 0
 		self.toDoAction = ['Login','Logout']
-		loadUi('main1.ui',self)
-		self.ui = loadUi('setting1.ui')
+		self.path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+		self.x = self.path + '/main1.ui'
+		loadUi(self.x,self)
+		self.x = self.path + '/setting1.ui'
+		self.ui = loadUi(self.x)
 		self.timer = QtCore.QTimer(self)
 
 		##%INITIALIZE MAIN WINDOW(elements)
