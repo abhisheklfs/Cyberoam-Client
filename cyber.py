@@ -23,6 +23,7 @@ class Cyberoam(QtGui.QWidget):
 	def initializeWindow(self):
 		##GENERAL VARIALBLES
 		self.initSysTray()
+		self.xv = 0
 		self.status = 0
 		self.xyzflag = 0
 		self.users = []
@@ -52,6 +53,9 @@ class Cyberoam(QtGui.QWidget):
 		self.pushButton_2.clicked.connect(self.addUser)
 		self.pushButton_3.clicked.connect(self.closeAction)
 		self.pushButton_4.clicked.connect(self.clearDatabase)
+		self.pushButton_6.clicked.connect(self.nextUserChange)
+		self.pushButton_5.clicked.connect(self.preUserChange)
+		self.pushButton_5.setEnabled(False)
 		#self.lineEdit_2.returnPressed.connect(self.takeAction)
 		#self.lineEdit.returnPressed.connect(self.takeAction)
 		self.timer.timeout.connect(self.relogin)
@@ -63,7 +67,41 @@ class Cyberoam(QtGui.QWidget):
 		##Sync to dataBase
 		self.syncData()
 
-	##defininge event when Enter Key is Pressed
+	##USER Change	
+	def nextUserChange(self):
+		if self.status==1:
+			self.logout()
+		self.userNumber = (self.userNumber + 1)%(len(self.users))
+		if(self.userNumber ==0):
+			self.pushButton_5.setEnabled(False)
+		else:
+			self.pushButton_5.setEnabled(True)
+		if (self.userNumber==len(self.users)-1):
+			self.pushButton_6.setEnabled(False)
+		else:
+			self.pushButton_6.setEnabled(True)
+		self.xv = 1
+		self.takeAction()
+		self.xv = 0
+
+	def preUserChange(self):
+		if(self.status==1):
+			self.logout()
+		self.userNumber = (self.userNumber - 1)%(len(self.users))
+		if(self.userNumber ==0):
+			self.pushButton_5.setEnabled(False)
+		else:
+			self.pushButton_5.setEnabled(True)
+
+		if (self.userNumber==len(self.users)-1):
+			self.pushButton_6.setEnabled(False)
+		else:
+			self.pushButton_6.setEnabled(True)
+		self.xv = 1
+		self.takeAction()
+		self.xv = 0
+
+	##defininge event when Enter Key is Pressed	
 	def keyPressEvent(self,e):
 		if e.key() == 16777220:
 			self.takeAction()
@@ -79,7 +117,7 @@ class Cyberoam(QtGui.QWidget):
 			if int(self.savedData.value('n').toString())>0:
 				self.lineEdit.setText(self.users[0])
 				self.lineEdit_2.setText(self.passwords[0])
-
+				self.xyzflag=1
 		if self.savedData.contains('autoLogin'):
 			if int(self.savedData.value('autoLogin').toString())==1:
 				self.checkBox.setChecked(True)
@@ -119,11 +157,15 @@ class Cyberoam(QtGui.QWidget):
 
 	##SystemTray
 	def initSysTray(self):
-		self.tray = QtGui.QSystemTrayIcon(QtGui.QIcon('cyberoam.png'),self)
+		self.path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+		self.x = self.path + '/cyberoam.png'
+		self.tray = QtGui.QSystemTrayIcon(QtGui.QIcon(self.x),self)
 		self.options = QtGui.QMenu(self)
-		self.windowAppear = self.options.addAction(QtGui.QIcon('res.png'),'Restore')
+		self.x = self.path + '/res.png'
+		self.windowAppear = self.options.addAction(QtGui.QIcon(self.x),'Restore')
 		self.windowAppear.triggered.connect(self.showWindows)
-		self.exitEvent = self.options.addAction(QtGui.QIcon('exit.png'),'Exit')
+		self.x = self.path + '/exit.png'
+		self.exitEvent = self.options.addAction(QtGui.QIcon(self.x),'Exit')
 		self.exitEvent.triggered.connect(self.closeAction)
 		self.tray.setContextMenu(self.options)
 		self.tray.activated.connect(self.showWindow)
@@ -159,10 +201,8 @@ class Cyberoam(QtGui.QWidget):
 		if self.status == 1:
 			self.logout()
 			return
-
 		if self.check() == 0:
 			return
-
 		if self.xyzflag == 0:
 			self.ans = self.preCheck()
 			if self.ans == 0:
@@ -174,14 +214,13 @@ class Cyberoam(QtGui.QWidget):
 			self.label_4.setText('Out of Users')
 			self.userNumber = 0
 			return
-
-		if(self.userNumber == 0 and self.users[self.userNumber] != self.lineEdit.text()):
+		if(self.userNumber == 0 and self.xv == 0 and (self.users[self.userNumber] != self.lineEdit.text() or self.passwords[self.userNumber] != self.lineEdit_2.text())):
 			self.users[self.userNumber] = self.lineEdit.text()
 			self.passwords[self.userNumber] = self.lineEdit_2.text()
 
 		self.uid = self.users[self.userNumber]
 		self.pid = self.passwords[self.userNumber]
-
+		self.url = 'https://172.16.1.1:8090/httpclient.html'
 		self.data = {'mode':'191' , 'username':self.uid , 'password':self.pid }
 		self.dataToSend = urllib.urlencode(self.data)
 		try:
@@ -198,6 +237,9 @@ class Cyberoam(QtGui.QWidget):
 				self.userNumber = self.userNumber + 1
 				self.takeAction()
 				return
+			if self.isHidden() and self.ntd == 1:
+				self.tray.showMessage('Reconnected!','Reconnection was done successfully.',1,5000)
+				self.ntd = 0
 		except IOError:
 			self.label_4.setText('Connection Lost')
 			self.logout()
