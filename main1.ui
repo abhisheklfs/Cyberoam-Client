@@ -20,7 +20,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>10</x>
      <y>10</y>
      <width>71</width>
      <height>31</height>
@@ -33,9 +33,9 @@
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>90</x>
      <y>10</y>
-     <width>161</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
@@ -43,7 +43,7 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>10</x>
      <y>60</y>
      <width>66</width>
      <height>17</height>
@@ -56,9 +56,9 @@
   <widget class="QLineEdit" name="lineEdit_2">
    <property name="geometry">
     <rect>
-     <x>130</x>
+     <x>90</x>
      <y>50</y>
-     <width>161</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
@@ -163,7 +163,7 @@
   <widget class="QCheckBox" name="checkBox">
    <property name="geometry">
     <rect>
-     <x>135</x>
+     <x>100</x>
      <y>90</y>
      <width>131</width>
      <height>21</height>
@@ -176,7 +176,7 @@
   <widget class="QCheckBox" name="checkBox_2">
    <property name="geometry">
     <rect>
-     <x>135</x>
+     <x>150</x>
      <y>120</y>
      <width>141</width>
      <height>21</height>
@@ -210,6 +210,19 @@
    </property>
    <property name="text">
     <string>Next</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>120</y>
+     <width>121</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Switch to Proff</string>
    </property>
   </widget>
  </widget>
