@@ -26,6 +26,13 @@ class Cyberoam(QtGui.QWidget):
 		self.xv = 0
 		self.status = 0
 		self.xyzflag = 0
+		self.proffFlag = 0
+		self.studentIndex = 0
+		self.studentMode = 0
+		self.proffMode = 0
+		self.proffIndex = 0
+		self.proffNumber = []
+		self.studentNumber = []
 		self.users = []
 		self.passwords = []
 		self.ntd = 0
@@ -37,6 +44,8 @@ class Cyberoam(QtGui.QWidget):
 		self.x = self.path + '/setting1.ui'
 		self.ui = loadUi(self.x)
 		self.timer = QtCore.QTimer(self)
+		self.proffTimer = QtCore.QTimer(self)
+		self.nonProffTimer = QtCore.QTimer(self)
 
 		##%INITIALIZE MAIN WINDOW(elements)
 		self.lineEdit_2.setEchoMode(QtGui.QLineEdit.Password)
@@ -59,6 +68,10 @@ class Cyberoam(QtGui.QWidget):
 		#self.lineEdit_2.returnPressed.connect(self.takeAction)
 		#self.lineEdit.returnPressed.connect(self.takeAction)
 		self.timer.timeout.connect(self.relogin)
+		self.proffTimer.timeout.connect(self.switchToProff)
+		self.nonProffTimer.timeout.connect(self.switchToStudent)
+		self.checkBox_3.stateChanged.connect(self.modeModify)
+
 
 		##MAKEVIEW_WINDOW
 		self.move(QtGui.QApplication.desktop().screen().rect().center()-self.rect().center())
@@ -67,19 +80,105 @@ class Cyberoam(QtGui.QWidget):
 		##Sync to dataBase
 		self.syncData()
 
-	##USER Change	
-	def nextUserChange(self):
+
+	def modeModify(self):
+		if len(self.users)==0:
+			return
+		if self.checkBox_3.isChecked():
+			self.tyme = time.strftime("%H")
+			if (self.tyme>=0 and self.tyme<7) or (self.tyme<24 and self.tyme >=19):
+				self.switchToProff()
+				if proffFlag == 0:
+					self.switchToStudent()
+			else:
+				self.switchToStudent()
+
+		else:
+			self.studentMode = 0
+			self.proffMode = 0
+		self.setnextpre()
+
+	def setnextpre(self):
+		if self.studentMode == 1:
+			if self.studentIndex == 0:
+				self.pushButton_5.setEnabled(False)
+			else:
+				self.pushButton_5.setEnabled(True)
+			if self.studentIndex == len(self.studentNumber) - 1 or len(self.studentNumber)==0:
+				self.pushButton_6.setEnabled(False)
+			else:
+				self.pushButton_6.setEnabled(True)
+		elif self.proffMode == 1:
+			if self.proffIndex == 0:
+				self.pushButton_5.setEnabled(False)
+			else:
+				self.pushButton_5.setEnabled(True)
+			if self.proffIndex == len(self.proffNumber) - 1 or len(self.proffNumber)==0:
+				self.pushButton_6.setEnabled(False)
+			else:
+				self.pushButton_6.setEnabled(True)
+		else:
+			if self.userNumber == 0:
+				self.pushButton_5.setEnabled(False)
+			else:
+				self.pushButton_5.setEnabled(True)
+			if self.userNumber == len(self.users) - 1 or len(self.users)==0:
+				self.pushButton_6.setEnabled(False)
+			else:
+				self.pushButton_6.setEnabled(True)
+
+	def switchToStudent(self):
 		if self.status==1:
 			self.logout()
-		self.userNumber = (self.userNumber + 1)%(len(self.users))
-		if(self.userNumber ==0):
-			self.pushButton_5.setEnabled(False)
+		self.studentMode = 1
+		self.proffMode = 0
+		self.takeAction()
+		self.nonProffTimer.stop()
+		self.tyme = self.calTime()
+		self.proffTimer.start(self.tyme)
+
+	##switching to proff
+	def switchToProff(self):
+		if self.proffFlag ==0:
+			return
+		if self.status==1:
+			self.logout()
+		self.userNumber = self.proffNumber[self.proffIndex]
+		self.proffMode = 1
+		self.studentMode = 0
+		self.takeAction()
+		self.proffTimer.stop()
+		self.tyme = self.calTime()
+		self.nonProffTimer.start(self.tyme)
+
+	def calTime(self):
+		self.secu = int(time.strftime("%S"))
+		self.minu = int(time.strftime("%M"))
+		self.Hour = int(time.strftime('%H'))
+		self.span = 60 - self.secu
+		self.span = (60 - self.minu -1)*60 + self.span
+		if self.Hour <19 and self.Hour >7:
+			self.span = self.span + (19 - self.Hour)*60*60
 		else:
-			self.pushButton_5.setEnabled(True)
-		if (self.userNumber==len(self.users)-1):
-			self.pushButton_6.setEnabled(False)
+			if self.Hour >=19:
+				self.span = self.span + (24 - self.Hour + 6)*3600
+			else:
+				self.span = self.span + (6 - self.Hour)*3600
+		return self.span*1000
+
+
+	##USER Change	
+	def nextUserChange(self):
+		sender = self.sender()
+		if self.status==1:
+			self.logout()
+		if self.studentMode == 1:
+			self.studentIndex = self.studentIndex + 1
+		elif self.proffMode == 1:
+			self.proffIndex = self.proffIndex + 1
 		else:
-			self.pushButton_6.setEnabled(True)
+			self.userNumber = self.userNumber + 1
+		self.setnextpre()
 		self.xv = 1
 		self.takeAction()
 		self.xv = 0
@@ -87,16 +186,13 @@ class Cyberoam(QtGui.QWidget):
 	def preUserChange(self):
 		if(self.status==1):
 			self.logout()
-		self.userNumber = (self.userNumber - 1)%(len(self.users))
-		if(self.userNumber ==0):
-			self.pushButton_5.setEnabled(False)
+		if self.studentMode == 1:
+			self.studentIndex = self.studentIndex - 1
+		elif self.proffMode == 1:
+			self.proffIndex = self.proffIndex - 1
 		else:
-			self.pushButton_5.setEnabled(True)
-
-		if (self.userNumber==len(self.users)-1):
-			self.pushButton_6.setEnabled(False)
-		else:
-			self.pushButton_6.setEnabled(True)
+			self.userNumber = self.userNumber - 1
+		self.setnextpre()
 		self.xv = 1
 		self.takeAction()
 		self.xv = 0
@@ -113,26 +209,57 @@ class Cyberoam(QtGui.QWidget):
 		if(self.savedData.contains('n')):
 			for i in xrange(int(self.savedData.value('n').toString())):
 				self.users.append(str(self.savedData.value('user%d'%i).toString()))
+				if len(self.users[i])==5:
+					self.proffFlag = 1
+					self.proffNumber.append(i)
+				else:
+					self.studentNumber.append(i)
 				self.passwords.append(str(self.savedData.value('password%d'%i).toString()))
 			if int(self.savedData.value('n').toString())>0:
 				self.lineEdit.setText(self.users[0])
 				self.lineEdit_2.setText(self.passwords[0])
 				self.xyzflag=1
+		if self.savedData.contains('switchProff'):
+			if int(self.savedData.value('switchProff').toString())==1:
+				self.checkBox_3.setChecked(True)
+				self.tyme = time.strftime("%H")
+				if(self.tyme<24 and self.tyme > 19) or (self.tyme >=0 and self.tyme<7):
+					if self.proffFlag ==1:
+						self.userNumber = self.proffNumber
+						self.proffMode = 1
+						self.studentMode = 0
+				else:
+					self.studentMode = 1
+					self.proffMode = 0
+					self.span = 0
+					self.secu = int(time.strftime("%S"))
+					self.minu = int(time.strftime("%M"))
+					self.Hour = int(time.strftime('%H'))
+					self.span = self.span + (60 - self.secu)
+					self.span = self.span + (60 - self.minu - 1)*60
+					self.span = self.span + (19 - self.Hour - 1)*3600
+					self.span = self.span * 1000
+					self.proffTimer.start(self.span)
 		if self.savedData.contains('autoLogin'):
 			if int(self.savedData.value('autoLogin').toString())==1:
 				self.checkBox.setChecked(True)
 		if self.savedData.contains('rememberme'):
 			if int(self.savedData.value('rememberme').toString())==1:
 				self.checkBox_2.setChecked(True)
+		self.setnextpre()
+
 		if self.savedData.contains('autoLogin'):
 			if self.savedData.value('autoLogin')==1:
 				if len(self.users)==0:
 					return
-				self.takeAction()
 				if self.status == 0:
 					return
 				self.hide()
 				self.tray.show()
+			else:
+				if self.status==1:
+					self.logout()
+				self.label_4.setText('Client is Idle')
 
 	##clearing Database
 	def clearDatabase(self):
@@ -147,9 +274,18 @@ class Cyberoam(QtGui.QWidget):
 		self.lineEdit_2.clear()
 		self.users = []
 		self.passwords = []
+		self.studentNumber = []
+		self.proffNumber = []
+		self.proffIndex = 0
+		self.studentIndex = 0
 		self.xyzflag = 0
 		self.userNumber = 0
-		self.ntd =0
+		self.ntd = 0
+		self.proffFlag = 0
+		self.studentMode = 0
+		self.proffMode = 0
+		self.modeModify()
+		self.setnextpre()
 
 
 
@@ -210,6 +346,16 @@ class Cyberoam(QtGui.QWidget):
 			self.xyzflag = 1
 			self.users.append(str(self.lineEdit.text()))
 			self.passwords.append(str(self.lineEdit_2.text()))
+			if len(self.users[len(self.users)-1]) == 5:
+				self.proffFlag = 1
+				self.proffNumber.append(len(self.users)-1)
+			else:
+				self.studentNumber.append(len(self.users)-1)
+			self.setnextpre()
+		if self.studentMode == 1:
+			self.userNumber = self.studentNumber[self.studentIndex]
+		if self.proffMode == 1:
+			self.userNumber = self.proffNumber[self.proffIndex]
 		if (len(self.users) <= self.userNumber):
 			self.label_4.setText('Out of Users')
 			self.userNumber = 0
@@ -234,7 +380,14 @@ class Cyberoam(QtGui.QWidget):
 				self.lineEdit_2.setReadOnly(True)
 				self.pushButton.setText(self.toDoAction[self.status])
 			elif 'Your data transfer has been exceeded' in self.dataReceived or 'You have reached Maximum Login Limit' in self.dataReceived:
-				self.userNumber = self.userNumber + 1
+				if (self.studentMode == 1):
+					self.studentIndex = self.studentIndex + 1
+					self.userNumber = self.studentNumber[self.studentIndex]
+				elif (self.proffMode == 1):
+					self.userNumber = self.proffNumber[self.proffIndex]
+				else:
+					self.userNumber = self.userNumber + 1
+				self.setnextpre()
 				self.takeAction()
 				return
 			if self.isHidden() and self.ntd == 1:
@@ -259,7 +412,14 @@ class Cyberoam(QtGui.QWidget):
 			self.dataReceived = urllib2.urlopen(self.url+'/live?'+urllib.urlencode(self.data)).read()
 			if 'Your data transfer has been exceeded' in self.dataReceived or 'You have reached Maximum Login Limit' in self.dataReceived:
 				self.logout()
-				self.userNumber = self.userNumber + 1
+				if (self.studentMode == 1):
+					self.studentIndex = self.studentIndex + 1
+					self.userNumber = self.studentNumber[self.studentIndex]
+				elif (self.proffMode == 1):
+					self.userNumber = self.proffNumber[self.proffIndex]
+				else:
+					self.userNumber = self.userNumber + 1
+				self.setnextpre()
 				self.takeAction()
 				if self.isHidden() == True:
 					self.tray.showMessage('Data Limit Exceeded','Urs %s Data Limit has been Exceeded.\n Changing to next User.'%self.users[self.userNumber-1],1,5000 )
@@ -331,6 +491,9 @@ class Cyberoam(QtGui.QWidget):
 		if self.checkBox.isChecked():
 			self.savedData.setValue('autoLogin','1')
 		else: self.savedData.setValue('autoLogin','0')
+		if self.checkBox_3.isChecked():
+			self.savedData.setValue('switchProff','1')
+		else: self.savedData.setValue('switchProff','0')
 		if self.checkBox_2.isChecked():
 			n = len(self.users)
 			for x in xrange(n):
@@ -447,6 +610,12 @@ class Cyberoam(QtGui.QWidget):
 				return
 			self.users.append(str(self.ui_username))
 			self.passwords.append(str(self.ui_password))
+			if len(str(self.ui_username)) == 5:
+				self.proffFlag = 1
+				self.proffNumber.append(len(self.users)-1)
+			else:
+				self.studentNumber.append(len(self.users)-1)
+			self.setnextpre()
 			self.verificationStatus = 0
 			self.ui.lineEdit.clear()
 			self.ui.lineEdit_2.clear()
