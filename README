@@ -9,3 +9,7 @@ Library's Used: PyQt4(QtGui,Qt,QtCore,uic.loadUi), time , urllib, urllib2
 Feature Added:
 
 1: Multiple User feed so no interuption during internet usage.
+
+2: Manual Switch acc to user's choice.
+
+3: Automatic switch from User's to Proff's id and vice versa at 7pm and 7am respectively.
