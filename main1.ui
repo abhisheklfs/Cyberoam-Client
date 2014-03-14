@@ -20,7 +20,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>16</x>
      <y>10</y>
      <width>71</width>
      <height>31</height>
@@ -33,7 +33,7 @@
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>96</x>
      <y>10</y>
      <width>201</width>
      <height>31</height>
@@ -43,7 +43,7 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>16</x>
      <y>60</y>
      <width>66</width>
      <height>17</height>
@@ -56,7 +56,7 @@
   <widget class="QLineEdit" name="lineEdit_2">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>96</x>
      <y>50</y>
      <width>201</width>
      <height>31</height>
@@ -163,9 +163,9 @@
   <widget class="QCheckBox" name="checkBox">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>106</x>
      <y>90</y>
-     <width>131</width>
+     <width>130</width>
      <height>21</height>
     </rect>
    </property>
@@ -176,9 +176,9 @@
   <widget class="QCheckBox" name="checkBox_2">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>156</x>
      <y>120</y>
-     <width>141</width>
+     <width>140</width>
      <height>21</height>
     </rect>
    </property>
@@ -215,9 +215,9 @@
   <widget class="QCheckBox" name="checkBox_3">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>16</x>
      <y>120</y>
-     <width>121</width>
+     <width>120</width>
      <height>21</height>
     </rect>
    </property>
