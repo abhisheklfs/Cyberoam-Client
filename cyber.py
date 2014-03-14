@@ -85,10 +85,10 @@ class Cyberoam(QtGui.QWidget):
 		if len(self.users)==0:
 			return
 		if self.checkBox_3.isChecked():
-			self.tyme = time.strftime("%H")
+			self.tyme = int(time.strftime("%H"))
 			if (self.tyme>=0 and self.tyme<7) or (self.tyme<24 and self.tyme >=19):
 				self.switchToProff()
-				if proffFlag == 0:
+				if self.proffFlag == 0:
 					self.switchToStudent()
 			else:
 				self.switchToStudent()
@@ -222,10 +222,10 @@ class Cyberoam(QtGui.QWidget):
 		if self.savedData.contains('switchProff'):
 			if int(self.savedData.value('switchProff').toString())==1:
 				self.checkBox_3.setChecked(True)
-				self.tyme = time.strftime("%H")
+				self.tyme = int(time.strftime("%H"))
 				if(self.tyme<24 and self.tyme > 19) or (self.tyme >=0 and self.tyme<7):
 					if self.proffFlag ==1:
-						self.userNumber = self.proffNumber
+						self.userNumber = self.proffNumber[0]
 						self.proffMode = 1
 						self.studentMode = 0
 				else:
@@ -465,7 +465,6 @@ class Cyberoam(QtGui.QWidget):
 		self.lineEdit_2.setReadOnly(False)
 		self.status = 0
 		self.pushButton.setText(self.toDoAction[self.status])
-
 		self.data = {'mode':'193', 'username':self.users[self.userNumber]}
 		self.url = 'https://172.16.1.1:8090/httpclient.html'
 		try:
@@ -613,6 +612,7 @@ class Cyberoam(QtGui.QWidget):
 			if len(str(self.ui_username)) == 5:
 				self.proffFlag = 1
 				self.proffNumber.append(len(self.users)-1)
+				self.modeModify()
 			else:
 				self.studentNumber.append(len(self.users)-1)
 			self.setnextpre()
