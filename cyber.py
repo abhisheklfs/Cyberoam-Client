@@ -132,7 +132,10 @@ class Cyberoam(QtGui.QWidget):
 			self.logout()
 		self.studentMode = 1
 		self.proffMode = 0
+		self.xv = 1
+		self.userNumber = self.studentNumber[self.studentIndex]
 		self.takeAction()
+		self.xv = 0
 		self.nonProffTimer.stop()
 		self.tyme = self.calTime()
 		self.proffTimer.start(self.tyme)
@@ -147,6 +150,8 @@ class Cyberoam(QtGui.QWidget):
 		self.proffMode = 1
 		self.studentMode = 0
 		self.takeAction()
+		self.xv = 1
+		self.xv = 0
 		self.proffTimer.stop()
 		self.tyme = self.calTime()
 		self.nonProffTimer.start(self.tyme)
